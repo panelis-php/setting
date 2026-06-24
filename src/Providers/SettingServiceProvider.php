@@ -2,6 +2,7 @@
 
 namespace Panelis\Setting\Providers;
 
+use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Panelis\Setting\Events\SettingUpdated;
@@ -20,6 +21,10 @@ class SettingServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../../resources/views', self::NAMESPACE);
 
         Event::listen(SettingUpdated::class, FlushCache::class);
+
+        LanguageSwitch::configureUsing(function (LanguageSwitch $language): void {
+            $language->locales(config('app.locales') ?? ['en']);
+        });
     }
 
     public function register(): void
