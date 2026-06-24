@@ -1,0 +1,37 @@
+{
+  "name": "panelis-php/setting",
+  "description": "Manage application settings including general configuration, logging, mail, formatting, and system options",
+  "keywords": [
+    "panelis"
+  ],
+  "license": "MIT",
+  "require": {
+    "lorisleiva/laravel-actions": "^2.10",
+    "illuminate/support": "^13.0",
+    "filament/filament": "^5.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Panelis\\Setting\\": "src/",
+      "Panelis\\Setting\\Database\\Factories\\": "database/factories/",
+      "Panelis\\Setting\\Database\\Seeders\\": "database/seeders/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Panelis\\Setting\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Panelis\\Setting\\Providers\\SettingServiceProvider"
+      ]
+    },
+    "panelis": {
+      "plugins": [
+        "Panelis\\Setting\\Plugins\\SettingPlugin"
+      ]
+    }
+  }
+}
