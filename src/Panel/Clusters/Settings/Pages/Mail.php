@@ -21,20 +21,15 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail as Mailer;
 use Illuminate\Validation\ValidationException;
 use Panelis\Branch\Models\Branch;
+use Panelis\Setting\Drivers\DriverManager;
+use Panelis\Setting\Drivers\MailDriver;
 use Panelis\Setting\Events\SettingUpdated;
 use Panelis\Setting\Mail\TestMail;
 use Panelis\Setting\Models\Setting;
 use Panelis\Setting\Panel\Clusters\Settings;
 use Panelis\Setting\Panel\Clusters\Settings\Enums\MailPermission;
-use Panelis\Setting\Panel\Clusters\Settings\Forms\Mail\CloudflareForm;
 use Panelis\Setting\Panel\Clusters\Settings\Forms\Mail\DriverForm;
-use Panelis\Setting\Panel\Clusters\Settings\Forms\Mail\MailgunForm;
-use Panelis\Setting\Panel\Clusters\Settings\Forms\Mail\PostmarkForm;
-use Panelis\Setting\Panel\Clusters\Settings\Forms\Mail\ResendForm;
 use Panelis\Setting\Panel\Clusters\Settings\Forms\Mail\SenderForm;
-use Panelis\Setting\Panel\Clusters\Settings\Forms\Mail\SendmailForm;
-use Panelis\Setting\Panel\Clusters\Settings\Forms\Mail\SesForm;
-use Panelis\Setting\Panel\Clusters\Settings\Forms\Mail\SmtpForm;
 use Panelis\Setting\Panel\Clusters\Settings\HasUpdateableForm;
 use Panelis\Setting\Panel\Clusters\Settings\UpdateSettingPage;
 use Symfony\Component\HttpFoundation\Response;
@@ -57,16 +52,14 @@ class Mail extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
 
     public array $services;
 
-    public string $version = '';
-
     public function getTitle(): string|Htmlable
     {
-        return __('setting::setting.mail.label');
+        return __('setting::mail.label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('setting::setting.mail.navigation');
+        return __('setting::mail.navigation');
     }
 
     public static function canAccess(): bool
@@ -79,32 +72,32 @@ class Mail extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
         return [
             Action::make('test_mail')
                 ->visible(user_can(MailPermission::SendTest))
-                ->label(__('setting::setting.mail.btn.test_send'))
+                ->label(__('setting::mail.btn.test_send'))
                 ->modalWidth(Width::Medium)
-                ->modalSubmitActionLabel(__('setting::setting.mail.btn.test_send'))
+                ->modalSubmitActionLabel(__('setting::mail.btn.test_send'))
                 ->schema([
                     Radio::make('send_from')
-                        ->label(__('setting::setting.mail.send_from'))
+                        ->label(__('setting::mail.send_from'))
                         ->default('mail')
                         ->live()
                         ->required()
                         ->options([
-                            'mail' => __('setting::setting.mail.app_email'),
-                            'branch' => __('setting::setting.mail.branch_email'),
+                            'mail' => __('setting::mail.app_email'),
+                            'branch' => __('setting::mail.branch_email'),
                         ]),
 
                     TextInput::make('from')
-                        ->label(__('setting::setting.mail.from_address'))
+                        ->label(__('setting::mail.from_address'))
                         ->default(config('mail.from.address'))
                         ->readOnly()
                         ->visible(fn (Get $get): bool => $get('send_from') === 'mail')
                         ->required(),
 
                     Select::make('branch')
-                        ->label(__('setting::setting.mail.from_address'))
+                        ->label(__('setting::mail.from_address'))
                         ->searchable()
                         ->visible(fn (Get $get): bool => $get('send_from') === 'branch')
-                        ->helperText(__('setting::setting.mail.branch_empty_help'))
+                        ->helperText(__('setting::mail.branch_empty_help'))
                         ->required()
                         ->options(
                             Branch::whereNotNull('email')
@@ -116,8 +109,8 @@ class Mail extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                         ),
 
                     TextInput::make('to')
-                        ->label(__('setting::setting.mail.to_address'))
-                        ->helperText(__('setting::setting.mail.email.helper'))
+                        ->label(__('setting::mail.to_address'))
+                        ->helperText(__('setting::mail.email.helper'))
                         ->email()
                         ->required(),
                 ])
@@ -143,8 +136,8 @@ class Mail extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
 
                         Notification::make()
                             ->success()
-                            ->title(__('setting::setting.mail.test_success'))
-                            ->body(__('setting::setting.mail.test_instruction'))
+                            ->title(__('setting::mail.test_success'))
+                            ->body(__('setting::mail.test_instruction'))
                             ->send();
                     } catch (Exception $e) {
                         Log::error($e);
@@ -152,7 +145,7 @@ class Mail extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                         Notification::make()
                             ->danger()
                             ->color('danger')
-                            ->title(__('setting::setting.mail.test_failed'))
+                            ->title(__('setting::mail.test_failed'))
                             ->body($e->getMessage())
                             ->persistent()
                             ->send();
@@ -177,24 +170,12 @@ class Mail extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
 
             'isButtonDisabled' => user_cannot(MailPermission::Edit),
         ]);
-
-        $this->version = array_first(explode('.', app()->version())) ?? '13';
     }
 
     public function form(Schema $schema): Schema
     {
-        return $schema->components([
-            SenderForm::schema(),
-            DriverForm::schema(),
-
-            CloudflareForm::schema($this->version),
-            MailgunForm::schema($this->version),
-            PostmarkForm::schema($this->version),
-            ResendForm::schema($this->version),
-            SmtpForm::schema(),
-            SendmailForm::schema(),
-            SesForm::schema($this->version),
-        ])->disabled(! user_can(MailPermission::Edit));
+        return $schema->components($this->getDriverForms())
+            ->disabled(! user_can(MailPermission::Edit));
     }
 
     /**
@@ -229,5 +210,21 @@ class Mail extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                 ->warning()
                 ->send();
         }
+    }
+
+    protected function getDriverForms(): array
+    {
+        $forms = [
+            SenderForm::schema(),
+            DriverForm::schema(),
+        ];
+
+        foreach (app(DriverManager::class)->all(MailDriver::class) as $driver) {
+            if ($section = $driver->schema()) {
+                $forms[] = $section;
+            }
+        }
+
+        return $forms;
     }
 }

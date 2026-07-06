@@ -55,8 +55,105 @@ Settings can be accessed throughout your application using the provided helper f
 Example:
 
 ```php id="hcvv1f"
-setting('site.name');
+config('site.name');
 ```
+
+## Extending Drivers
+
+Panelis uses a driver-based architecture for configurable services such as Mail, Cache, and Log.
+
+### Registering a Driver
+
+Register a driver from your service provider.
+
+```php
+use Panelis\Setting\Drivers\DriverManager;
+
+app(DriverManager::class)->register(
+    new MailerSendDriver(),
+);
+```
+
+The driver will automatically appear in the corresponding settings page.
+
+---
+
+## Creating a Mail Driver
+
+Create a driver by extending `MailDriver`.
+
+```php
+use Panelis\Setting\Drivers\MailDriver;
+
+class MailerSendDriver extends MailDriver
+{
+    public const NAME = 'mailersend';
+
+    public function name(): string
+    {
+        return self::NAME;
+    }
+
+    public function label(): string
+    {
+        return 'MailerSend';
+    }
+
+    public function description(): ?string
+    {
+        return 'MailerSend API';
+    }
+
+    public function installed(): bool
+    {
+        return InstalledVersions::isInstalled(
+            'mailersend/mailersend-laravel'
+        );
+    }
+
+    public function schema(): ?Section
+    {
+        return MailerSendForm::schema();
+    }
+}
+```
+
+Once registered, the driver will automatically:
+
+- Appear in the Mail driver list.
+- Display its configuration section.
+- Respect its installation status.
+- Be sorted by `sort()` and `label()`.
+
+---
+
+## Creating Other Driver Types
+
+The same mechanism can be used for other configurable services.
+
+### Cache
+
+```php
+class RedisDriver extends CacheDriver
+{
+    public const NAME = 'redis';
+
+    // ...
+}
+```
+
+### Log
+
+```php
+class SlackDriver extends LogDriver
+{
+    public const NAME = 'slack';
+
+    // ...
+}
+```
+
+`DriverManager` automatically groups drivers by their base type, so Mail, Cache, and Log drivers remain isolated from each other.
 
 ## Integration
 
