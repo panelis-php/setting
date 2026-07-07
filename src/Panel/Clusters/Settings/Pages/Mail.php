@@ -81,6 +81,9 @@ class Mail extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                         ->default('mail')
                         ->live()
                         ->required()
+                        ->disableOptionWhen(function (string $value): bool {
+                            return $value === 'branch' && ! config('panelis.multitenant');
+                        })
                         ->options([
                             'mail' => __('setting::mail.app_email'),
                             'branch' => __('setting::mail.branch_email'),

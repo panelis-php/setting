@@ -72,7 +72,7 @@ class Setting extends Model
                     $value = json_encode($value);
                 }
 
-                if ($value !== '' && config('setting.encrypt_value')) {
+                if (config('setting.encrypt_value')) {
                     return Crypt::encryptString(serialize($value));
                 }
 
