@@ -42,6 +42,16 @@ class DriverManager
     }
 
     /**
+     * Get all driver values by a given key.
+     */
+    public function pluck(string $type, string $key): array
+    {
+        return array_map(function (Driver $driver) use ($key): ?string {
+            return $driver->{$key}() ?? null;
+        }, $this->all($type));
+    }
+
+    /**
      * @template T of Driver
      *
      * @param  class-string<T>  $type

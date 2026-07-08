@@ -24,6 +24,6 @@ enum LogLevel: string implements HasLabel
 
     public function getLabel(): string
     {
-        return __(sprintf('setting.log.level_%s', $this->value));
+        return __(sprintf('setting::log.level_%s', $this->value));
     }
 }

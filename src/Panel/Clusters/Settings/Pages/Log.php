@@ -5,13 +5,10 @@ namespace Panelis\Setting\Panel\Clusters\Settings\Pages;
 use BackedEnum;
 use Exception;
 use Filament\Actions\Action;
-use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Notifications\Notification;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
@@ -19,16 +16,19 @@ use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log as Logger;
 use Illuminate\Validation\ValidationException;
+use Panelis\Setting\Drivers\DriverManager;
+use Panelis\Setting\Drivers\Log\PapertrailDriver;
+use Panelis\Setting\Drivers\Log\SingleDriver;
+use Panelis\Setting\Drivers\Log\SlackDriver;
+use Panelis\Setting\Drivers\LogDriver;
 use Panelis\Setting\Events\SettingUpdated;
 use Panelis\Setting\Models\Setting;
 use Panelis\Setting\Panel\Clusters\Settings;
-use Panelis\Setting\Panel\Clusters\Settings\Enums\LogChannel;
 use Panelis\Setting\Panel\Clusters\Settings\Enums\LogPermission;
-use Panelis\Setting\Panel\Clusters\Settings\Forms\Log\NightwatchForm;
-use Panelis\Setting\Panel\Clusters\Settings\Forms\Log\PapertailForm;
-use Panelis\Setting\Panel\Clusters\Settings\Forms\Log\SlackForm;
+use Panelis\Setting\Panel\Clusters\Settings\Forms\Log\DriverForm;
 use Panelis\Setting\Panel\Clusters\Settings\HasUpdateableForm;
 use Panelis\Setting\Panel\Clusters\Settings\UpdateSettingPage;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,16 +54,16 @@ class Log extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
     {
         return [
             Action::make('send_log')
-                ->label(__('setting::setting.log.btn.test'))
+                ->label(__('setting::log.btn.test'))
                 ->modalWidth(Width::Medium)
                 ->schema([
                     Textarea::make('message')
-                        ->label(__('setting::setting.log.message'))
+                        ->label(__('setting::log.message'))
                         ->rows(4)
                         ->required(),
 
                     Toggle::make('notification')
-                        ->label(__('setting::setting.log.send_as_notification'))
+                        ->label(__('setting::log.send_as_notification'))
                         ->default(config('logging.enable_notification')),
                 ])
                 ->action(function (array $data): void {
@@ -71,13 +71,13 @@ class Log extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                         Logger::debug($data['message'] ?? 'Testing log');
 
                         Notification::make()
-                            ->title(__('setting::setting.log.test_sent'))
+                            ->title(__('setting::log.test_sent'))
                             ->success()
                             ->send();
 
                         if ($data['notification'] ?? false) {
                             Notification::make()
-                                ->title(__('setting::setting.log.label'))
+                                ->title(__('setting::log.label'))
                                 ->body($data['message'])
                                 ->danger()
                                 ->sendToDatabase(Auth::user());
@@ -90,12 +90,12 @@ class Log extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
 
     public function getTitle(): string|Htmlable
     {
-        return __('setting::setting.log.label');
+        return __('setting::log.label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('setting::setting.log.navigation');
+        return __('setting::log.navigation');
     }
 
     public static function canAccess(): bool
@@ -110,7 +110,7 @@ class Log extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
         $channel = 'logging.channels.stack.channels';
         $default = Setting::get($channel);
         if (empty($default)) {
-            Setting::set($channel, [LogChannel::Single->value]);
+            Setting::set($channel, [SingleDriver::NAME]);
         }
 
         $this->form->fill([
@@ -120,13 +120,13 @@ class Log extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                         'channels' => $logging['channels'],
                     ],
 
-                    LogChannel::Slack->value => [
+                    SlackDriver::NAME => [
                         'username' => config('logging.channels.slack.username'),
                         'url' => config('logging.channels.slack.url'),
                         'level' => config('logging.channels.slack.level'),
                     ],
 
-                    LogChannel::Papertrail->value => [
+                    PapertrailDriver::NAME => [
                         'level' => config('logging.channels.papertrail.level'),
                         'url' => config('logging.channels.papertrail.url'),
                         'port' => config('logging.channels.papertrail.port', 514),
@@ -136,64 +136,14 @@ class Log extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                 'enable_notification' => config('logging.enable_notification'),
             ],
 
-            LogChannel::Nightwatch->value => [
-                'enabled' => config('nightwatch.enabled'),
-                'token' => config('nightwatch.token'),
-                'sampling' => [
-                    'requests' => config('nightwatch.sampling.requests'),
-                    'commands' => config('nightwatch.sampling.commands'),
-                    'exceptions' => config('nightwatch.sampling.exceptions'),
-                ],
-            ],
-
             'isButtonDisabled' => user_cannot(LogPermission::Browse),
         ]);
     }
 
-    public function form(Schema $schema): Schema
+    public function form(Schema $form): Schema
     {
-        return $schema
-            ->disabled(user_cannot(LogPermission::Edit))
-            ->components([
-                Section::make(__('setting::setting.log.label'))
-                    ->description(__('setting::setting.log.section_description'))
-                    ->schema([
-                        Toggle::make('logging.enable_notification')
-                            ->label(__('setting::setting.log.enable_notification'))
-                            ->helperText(__('setting::setting.log.notification_helper'))
-                            ->required(),
-
-                        CheckboxList::make('logging.channels.stack.channels')
-                            ->label(__('setting::setting.log.channel'))
-                            ->live()
-                            ->required()
-                            ->options(LogChannel::class)
-                            ->enum(LogChannel::class)
-                            ->disableOptionWhen(function (string $value): bool {
-                                return $value === LogChannel::Nightwatch->value && ! $this->nightwatchInstalled();
-                            }),
-                    ]),
-
-                Section::make(__('setting::setting.log.nightwatch'))
-                    ->visible(function (Get $get): bool {
-                        return in_array(LogChannel::Nightwatch, $get('logging.channels.stack.channels'))
-                            && $this->nightwatchInstalled();
-                    })->schema(NightwatchForm::schema()),
-
-                Section::make(__('setting::setting.log.papertrail'))
-                    ->visible(function (Get $get): bool {
-                        return in_array(LogChannel::Papertrail, $get('logging.channels.stack.channels'));
-                    })
-                    ->collapsible()
-                    ->schema(PapertailForm::schema()),
-
-                Section::make(__('setting::setting.log.slack'))
-                    ->visible(function (Get $get): bool {
-                        return in_array(LogChannel::Slack, $get('logging.channels.stack.channels'));
-                    })
-                    ->collapsible()
-                    ->schema(SlackForm::schema()),
-            ]);
+        return $form->schema($this->getDriverForms())
+            ->disabled(user_cannot(LogPermission::Edit));
     }
 
     /**
@@ -208,15 +158,15 @@ class Log extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
         try {
             $state = Arr::dot($this->form->getState()['logging']);
 
-            $channels = array_map(function (LogChannel $channel) {
-                return $channel->value;
-            }, Arr::dot($this->form->getState()['logging']['channels']['stack']));
-            Setting::set('logging.channels.stack.channels', array_values($channels));
-
             if ($enableNotification = data_get($state, 'enable_notification')) {
                 Setting::set('logging.enable_notification', $enableNotification);
                 unset($state['enable_notification']);
             }
+
+            $channels = array_map(function (string $channel) {
+                return $channel;
+            }, Arr::dot($this->form->getState()['logging']['channels']['stack']));
+            Setting::set('logging.channels.stack.channels', array_values($channels));
 
             foreach ($state as $key => $value) {
                 if (str_starts_with($key, 'channels.stack.channels')) {
@@ -226,21 +176,7 @@ class Log extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                 Setting::set('logging.'.$key, $value);
             }
 
-            // update specific setting for Nightwatch
-            $nightwatch = Arr::dot($this->form->getState()['nightwatch'] ?? []);
-            foreach ($nightwatch as $key => $value) {
-                $key = sprintf('%s.%s', LogChannel::Nightwatch->value, $key);
-
-                if ($key === 'nightwatch.enabled' && $value === false) {
-                    Setting::set($key, false);
-
-                    break;
-                }
-
-                Setting::set($key, $value);
-            }
-
-            event(new SettingUpdated);
+            Event::dispatch(new SettingUpdated);
 
             Notification::make()
                 ->title(__('setting::setting.notifications.updated.title'))
@@ -257,8 +193,18 @@ class Log extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
         }
     }
 
-    private function nightwatchInstalled(): bool
+    private function getDriverForms(): array
     {
-        return class_exists('Laravel\Nightwatch\NightwatchServiceProvider');
+        $forms = [
+            DriverForm::schema(),
+        ];
+
+        foreach (app(DriverManager::class)->all(LogDriver::class) as $driver) {
+            if ($section = $driver->schema()) {
+                $forms[] = $section;
+            }
+        }
+
+        return $forms;
     }
 }
