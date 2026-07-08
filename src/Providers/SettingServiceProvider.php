@@ -5,6 +5,13 @@ namespace Panelis\Setting\Providers;
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Panelis\Setting\Drivers\Cache\ArrayDriver;
+use Panelis\Setting\Drivers\Cache\DatabaseDriver;
+use Panelis\Setting\Drivers\Cache\DynamoDbDriver;
+use Panelis\Setting\Drivers\Cache\FileDriver;
+use Panelis\Setting\Drivers\Cache\MemcachedDriver;
+use Panelis\Setting\Drivers\Cache\RedisDriver;
+use Panelis\Setting\Drivers\Cache\StorageDriver;
 use Panelis\Setting\Drivers\DriverManager;
 use Panelis\Setting\Drivers\Mail\CloudflareDriver;
 use Panelis\Setting\Drivers\Mail\LogDriver;
@@ -23,9 +30,10 @@ class SettingServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-        $this->app->singleton(DriverManager::class, fn () => new DriverManager);
+        $this->app->singleton(DriverManager::class, fn (): DriverManager => new DriverManager);
 
         app(DriverManager::class)
+            // mail
             ->register(new CloudflareDriver)
             ->register(new LogDriver)
             ->register(new MailgunDriver)
@@ -33,7 +41,16 @@ class SettingServiceProvider extends ServiceProvider
             ->register(new ResendDriver)
             ->register(new SendmailDriver)
             ->register(new SesDriver)
-            ->register(new SmtpDriver);
+            ->register(new SmtpDriver)
+
+            // cache
+            ->register(new ArrayDriver)
+            ->register(new DynamoDbDriver)
+            ->register(new DatabaseDriver)
+            ->register(new FileDriver)
+            ->register(new MemcachedDriver)
+            ->register(new RedisDriver)
+            ->register(new StorageDriver);
     }
 
     public function boot(): void

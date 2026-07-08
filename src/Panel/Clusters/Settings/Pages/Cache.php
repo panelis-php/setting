@@ -5,22 +5,18 @@ namespace Panelis\Setting\Panel\Clusters\Settings\Pages;
 use BackedEnum;
 use Exception;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Radio;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Notifications\Notification;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Log;
+use Panelis\Setting\Drivers\CacheDriver;
+use Panelis\Setting\Drivers\DriverManager;
 use Panelis\Setting\Panel\Clusters\Settings;
-use Panelis\Setting\Panel\Clusters\Settings\Enums\CacheDriver;
 use Panelis\Setting\Panel\Clusters\Settings\Enums\CachePermission;
-use Panelis\Setting\Panel\Clusters\Settings\Forms\Cache\DynamoDBForm;
-use Panelis\Setting\Panel\Clusters\Settings\Forms\Cache\MemcachedForm;
-use Panelis\Setting\Panel\Clusters\Settings\Forms\Cache\RedisForm;
+use Panelis\Setting\Panel\Clusters\Settings\Forms\Cache\DriverForm;
 use Panelis\Setting\Panel\Clusters\Settings\HasUpdateableForm;
 use Panelis\Setting\Panel\Clusters\Settings\UpdateSettingPage;
 
@@ -45,21 +41,21 @@ class Cache extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
     {
         return [
             Action::make('test_cache')
-                ->label(__('setting::setting.cache.btn.test'))
+                ->label(__('setting::cache.btn.test'))
                 ->visible(false)
                 ->action(function (): void {
                     try {
                         \Illuminate\Support\Facades\Cache::put('test', 'test', now()->addMinute(5));
 
                         Notification::make()
-                            ->title(__('setting::setting.cache.test_success'))
+                            ->title(__('setting::cache.test_success'))
                             ->success()
                             ->send();
                     } catch (Exception $e) {
                         Log::error($e);
 
                         Notification::make()
-                            ->title(__('setting::setting.cache.test_failed'))
+                            ->title(__('setting::cache.test_failed'))
                             ->body($e->getMessage())
                             ->danger()
                             ->send();
@@ -67,7 +63,7 @@ class Cache extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                 }),
 
             Action::make('flush_cache')
-                ->label(__('setting::setting.cache.btn.flush'))
+                ->label(__('setting::cache.btn.flush'))
                 ->requiresConfirmation()
                 ->color('warning')
                 ->hidden(user_cannot(CachePermission::Flush))
@@ -76,7 +72,7 @@ class Cache extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                         \Illuminate\Support\Facades\Cache::flush();
 
                         Notification::make()
-                            ->title(__('setting::setting.cache.flushed'))
+                            ->title(__('setting::cache.flushed'))
                             ->success()
                             ->send();
                     } catch (Exception $e) {
@@ -88,12 +84,12 @@ class Cache extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
 
     public function getTitle(): string|Htmlable
     {
-        return __('setting::setting.cache.label');
+        return __('setting::cache.label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('setting::setting.cache.navigation');
+        return __('setting::cache.navigation');
     }
 
     public static function canAccess(): bool
@@ -122,30 +118,21 @@ class Cache extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
     {
         return $schema
             ->disabled(user_cannot(CachePermission::Edit))
-            ->schema([
-                Section::make(__('setting::setting.cache.label'))
-                    ->description(__('setting::setting.cache.section_description'))
-                    ->schema([
-                        Radio::make('cache.default')
-                            ->label(__('setting::setting.cache.driver'))
-                            ->options(CacheDriver::class)
-                            ->live()
-                            ->required()
-                            ->enum(CacheDriver::class),
-                    ]),
+            ->schema($this->getDriverForms());
+    }
 
-                Section::make(__('setting::setting.cache.memcached.label'))
-                    ->visible(fn (Get $get): bool => $get('cache.default') === CacheDriver::Memcached)
-                    ->schema(MemcachedForm::schema()),
+    private function getDriverForms(): array
+    {
+        $forms = [
+            DriverForm::schema(),
+        ];
 
-                Section::make(__('setting::setting.cache.redis.label'))
-                    ->visible(fn (Get $get): bool => $get('cache.default') === CacheDriver::Redis)
-                    ->schema(RedisForm::schema()),
+        foreach (app(DriverManager::class)->all(CacheDriver::class) as $driver) {
+            if ($section = $driver->schema()) {
+                $forms[] = $section;
+            }
+        }
 
-                Section::make(__('setting::setting.cache.dynamodb.label'))
-                    ->visible(fn (Get $get): bool => $get('cache.default') === CacheDriver::DynamoDB)
-                    ->disabled(! CacheDriver::DynamoDB->isInstalled())
-                    ->schema(DynamoDBForm::schema()),
-            ]);
+        return $forms;
     }
 }
