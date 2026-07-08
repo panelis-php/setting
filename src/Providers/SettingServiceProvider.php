@@ -13,6 +13,13 @@ use Panelis\Setting\Drivers\Cache\MemcachedDriver;
 use Panelis\Setting\Drivers\Cache\RedisDriver;
 use Panelis\Setting\Drivers\Cache\StorageDriver;
 use Panelis\Setting\Drivers\DriverManager;
+use Panelis\Setting\Drivers\Log\DailyDriver;
+use Panelis\Setting\Drivers\Log\ErrorlogDriver;
+use Panelis\Setting\Drivers\Log\MonologDriver;
+use Panelis\Setting\Drivers\Log\PapertrailDriver;
+use Panelis\Setting\Drivers\Log\SingleDriver;
+use Panelis\Setting\Drivers\Log\SlackDriver;
+use Panelis\Setting\Drivers\Log\SyslogDriver;
 use Panelis\Setting\Drivers\Mail\CloudflareDriver;
 use Panelis\Setting\Drivers\Mail\LogDriver;
 use Panelis\Setting\Drivers\Mail\MailgunDriver;
@@ -42,6 +49,15 @@ class SettingServiceProvider extends ServiceProvider
             ->register(new SendmailDriver)
             ->register(new SesDriver)
             ->register(new SmtpDriver)
+
+            // log
+            ->register(new DailyDriver)
+            ->register(new ErrorlogDriver)
+            ->register(new MonologDriver)
+            ->register(new PapertrailDriver)
+            ->register(new SingleDriver)
+            ->register(new SlackDriver)
+            ->register(new SyslogDriver)
 
             // cache
             ->register(new ArrayDriver)

@@ -8,23 +8,23 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Panelis\Setting\Drivers\Driver;
 use Panelis\Setting\Drivers\DriverManager;
-use Panelis\Setting\Drivers\Log\SlackDriver;
+use Panelis\Setting\Drivers\Log\PapertrailDriver;
 use Panelis\Setting\Drivers\LogDriver;
 use Panelis\Setting\Panel\Clusters\Settings\Enums\LogLevel;
 
-class SlackForm
+class PapertrailForm
 {
     public static function schema(): Section
     {
         /**
          * @var Driver $driver
          */
-        $driver = app(DriverManager::class)->find(LogDriver::class, SlackDriver::NAME);
+        $driver = app(DriverManager::class)->find(LogDriver::class, PapertrailDriver::NAME);
 
         return Section::make()
             ->visible(fn (Get $get): bool => in_array($driver->name(), $get('logging.channels.stack.channels')))
             ->schema([
-                Select::make('logging.channels.slack.level')
+                Select::make('logging.channels.papertrail.level')
                     ->label(__('setting::log.level'))
                     ->options(LogLevel::class)
                     ->searchable()
@@ -38,19 +38,14 @@ class SlackForm
                     })
                     ->enum(LogLevel::class),
 
-                TextInput::make('logging.channels.slack.url')
-                    ->label(__('setting::log.slack_webhook_url'))
-                    ->hint(
-                        str(__('setting::log.slack_webhook_hint'))
-                            ->inlineMarkdown()
-                            ->toHtmlString()
-                    )
+                TextInput::make('logging.channels.papertrail.url')
+                    ->label(__('setting::log.papertrail.url'))
                     ->url()
                     ->required(),
 
-                TextInput::make('logging.channels.slack.username')
-                    ->label(__('setting::log.slack_username'))
-                    ->string()
+                TextInput::make('logging.channels.papertrail.port')
+                    ->label(__('setting::log.papertrail.port'))
+                    ->numeric()
                     ->required(),
             ]);
     }

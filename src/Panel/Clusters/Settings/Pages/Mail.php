@@ -175,9 +175,9 @@ class Mail extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
         ]);
     }
 
-    public function form(Schema $schema): Schema
+    public function form(Schema $form): Schema
     {
-        return $schema->components($this->getDriverForms())
+        return $form->schema($this->getDriverForms())
             ->disabled(! user_can(MailPermission::Edit));
     }
 
@@ -215,7 +215,7 @@ class Mail extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
         }
     }
 
-    protected function getDriverForms(): array
+    private function getDriverForms(): array
     {
         $forms = [
             SenderForm::schema(),
