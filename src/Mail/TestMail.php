@@ -41,6 +41,7 @@ class TestMail extends Mailable
         return new Content(
             text: 'setting::mails.test-text',
             markdown: 'setting::mails.test',
+            with: ['url' => url('/?utm-source=test_mail&utm-medium=email')],
         );
     }
 

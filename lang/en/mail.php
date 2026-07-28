@@ -94,5 +94,6 @@ return [
     'btn' => [
         'test_send' => 'Test send mail',
         'view_doc' => 'View documentation',
+        'go_to_site' => 'Go to site',
     ],
 ];
