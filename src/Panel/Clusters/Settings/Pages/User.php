@@ -15,8 +15,10 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Auth;
+use Panelis\Setting\Drivers\Avatar\UIAvatarsDriver;
+use Panelis\Setting\Drivers\AvatarDriver;
+use Panelis\Setting\Drivers\DriverManager;
 use Panelis\Setting\Panel\Clusters\Settings;
-use Panelis\Setting\Panel\Clusters\Settings\Enums\AvatarProvider;
 use Panelis\Setting\Panel\Clusters\Settings\Enums\LibravatarStyle;
 use Panelis\Setting\Panel\Clusters\Settings\Enums\UserPermission;
 use Panelis\Setting\Panel\Clusters\Settings\HasUpdateableForm;
@@ -99,26 +101,27 @@ class User extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
 
                         Radio::make('user.avatar_provider')
                             ->label(__('setting::user.avatar_provider'))
-                            ->options(AvatarProvider::class)
-                            ->enum(AvatarProvider::class)
-                            ->default(AvatarProvider::UIAvatars)
+                            ->options(fn (): array => collect(app(DriverManager::class)->all(AvatarDriver::class))
+                                ->mapWithKeys(fn (AvatarDriver $driver): array => [$driver->name() => $driver->label()])
+                                ->all())
+                            ->default(UIAvatarsDriver::NAME)
                             ->live()
                             ->required(),
 
                         Radio::make('user.avatar_libravatar_style')
                             ->label(__('setting::user.avatar_libravatar_style'))
-                            ->visible(fn (Get $get): bool => $get('user.avatar_provider') === AvatarProvider::Libravatar)
+                            ->visible(fn (Get $get): bool => $get('user.avatar_provider') === 'libravatar')
                             ->live()
                             ->enum(LibravatarStyle::class)
-                            ->required(fn (Get $get): bool => $get('user.avatar_provider') === AvatarProvider::Libravatar)
+                            ->required(fn (Get $get): bool => $get('user.avatar_provider') === 'libravatar')
                             ->options(LibravatarStyle::class),
 
                         Image::make(
                             url: function (Get $get): ?string {
-                                $provider = $get('user.avatar_provider') ?? AvatarProvider::UIAvatars;
+                                $provider = app(DriverManager::class)->find(AvatarDriver::class, $get('user.avatar_provider') ?? UIAvatarsDriver::NAME);
                                 $style = $get('user.avatar_libravatar_style');
 
-                                return $provider->getImageUrl(Auth::user(), $style);
+                                return $provider?->getImageUrl(Auth::user(), $style);
                             },
                             alt: 'Avatar',
                         ),

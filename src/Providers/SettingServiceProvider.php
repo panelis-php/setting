@@ -5,6 +5,10 @@ namespace Panelis\Setting\Providers;
 use BezhanSalleh\LanguageSwitch\LanguageSwitch;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Panelis\Setting\Drivers\Avatar\GravatarDriver;
+use Panelis\Setting\Drivers\Avatar\LibravatarDriver;
+use Panelis\Setting\Drivers\Avatar\UIAvatarsDriver;
+use Panelis\Setting\Drivers\Avatar\UnavatarDriver;
 use Panelis\Setting\Drivers\Cache\ArrayDriver;
 use Panelis\Setting\Drivers\Cache\DatabaseDriver;
 use Panelis\Setting\Drivers\Cache\DynamoDbDriver;
@@ -41,6 +45,12 @@ class SettingServiceProvider extends ServiceProvider
         $this->app->singleton(DriverManager::class, fn (): DriverManager => new DriverManager);
 
         app(DriverManager::class)
+            // avatar
+            ->register(new UIAvatarsDriver)
+            ->register(new GravatarDriver)
+            ->register(new LibravatarDriver)
+            ->register(new UnavatarDriver)
+
             // mail
             ->register(new CloudflareDriver)
             ->register(new LogDriver)
