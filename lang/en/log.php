@@ -39,6 +39,11 @@ return [
         'description' => 'This driver uses the Monolog logging library, which provides a wide range of log handlers and is highly customizable.',
     ],
 
+    'monthly' => [
+        'label' => 'Monthly',
+        'description' => 'This driver logs messages to a new log file each month and keeps a limited number of monthly files.',
+    ],
+
     'papertrail' => [
         'label' => 'Papertrail',
         'description' => 'This driver sends log messages to the Papertrail cloud-based log management service.',
