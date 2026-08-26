@@ -11,7 +11,7 @@ trait AddUpdateButton
     protected function getUpdateAction(): Action
     {
         return Action::make('update_setting')
-            ->label(__('ui.btn.update'))
+            ->label(__('setting::setting.btn.update'))
             ->color('primary')
             ->disabled($this->isButtonDisabled)
             ->action('update');

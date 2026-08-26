@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'url' => 'URL',
+    'brand' => 'Jenama',
+    'description' => 'Deskripsi',
+    'available_locales' => 'Bahasa yang tersedia',
+    'locale_list_hint' => '[Daftar kode ISO-639](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes)',
+    'default_locale' => 'Bahasa bawaan',
+    'email' => 'Pos-el',
+    'email_as_sender' => 'Gunakan alamat pos-el sebagai alamat pengirim pos-el',
+    'app_debug_enabled' => 'Debug aplikasi aktif',
+    'telescope_enabled' => 'Telescope aktif',
+    'exported_file' => 'File yang diekspor',
+    'setting_imported' => 'Pengaturan berhasil diimpor',
+    'setting_not_imported' => 'Pengaturan tidak berhasil diimpor',
+    'label' => 'Umum',
+    'navigation' => 'Umum',
+    'section_description' => 'Kelola informasi dasar aplikasi seperti nama, deskripsi, logo, bahasa standar, dan pos-el kontak.',
+    'debug_mode' => 'Mode Debug',
+    'image' => 'Logo & Favicon',
+    'section_image' => 'Kelola logo dan favicon aplikasi untuk penjenamaan dan tampilan peramban.',
+    'use_logo_in_panel' => 'Gunakan logo di panel admin',
+    'logo' => 'Logo',
+    'favicon' => 'Favicon',
+];

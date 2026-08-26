@@ -3,7 +3,7 @@
 return [
     'label' => 'Log',
     'navigation' => 'Log',
-    'section_description' => 'Configure the logging channel used by the application, such as single, daily, or third-party services like Slack or Nightwatch.',
+    'section_description' => 'Configure the logging channel used by the application, such as single, daily, or third-party services like Slack or Papertrail.',
     'enable_notification' => 'Enable notification',
     'notification_helper' => 'When enabled, system errors will be sent as notifications to the dashboard.',
     'send_as_notification' => 'Send and view as notification',

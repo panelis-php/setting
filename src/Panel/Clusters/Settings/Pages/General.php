@@ -64,7 +64,7 @@ class General extends Page
                     ->requiresConfirmation()
                     ->schema([
                         FileUpload::make('settings')
-                            ->label(__('setting::setting.general.exported_file'))
+                            ->label(__('setting::general.exported_file'))
                             ->previewable(false)
                             ->storeFiles(false)
                             ->fetchFileInformation(false)
@@ -80,14 +80,14 @@ class General extends Page
                             ImportAll::run($data['settings']);
 
                             Notification::make()
-                                ->title(__('setting::setting.general.setting_imported'))
+                                ->title(__('setting::general.setting_imported'))
                                 ->success()
                                 ->send();
                         } catch (Exception $e) {
                             Logger::error($e);
 
                             Notification::make()
-                                ->title(__('setting::setting.general.setting_not_imported'))
+                                ->title(__('setting::general.setting_not_imported'))
                                 ->danger()
                                 ->send();
                         }
@@ -98,12 +98,12 @@ class General extends Page
 
     public function getTitle(): string|Htmlable
     {
-        return __('setting::setting.general.label');
+        return __('setting::general.label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('setting::setting.general.navigation');
+        return __('setting::general.navigation');
     }
 
     public static function canAccess(): bool
@@ -151,17 +151,17 @@ class General extends Page
         }
 
         return $schema->components([
-            Section::make(__('setting::setting.general.image'))
+            Section::make(__('setting::general.image'))
                 ->columns(2)
-                ->description(__('setting::setting.general.section_image'))
+                ->description(__('setting::general.section_image'))
                 ->collapsible()
                 ->schema(ImageForm::schema()),
 
-            Section::make(__('setting::setting.general.label'))
-                ->description(__('setting::setting.general.section_description'))
+            Section::make(__('setting::general.label'))
+                ->description(__('setting::general.section_description'))
                 ->schema(GeneralForm::schema()),
 
-            Section::make(__('setting::setting.general.debug_mode'))
+            Section::make(__('setting::general.debug_mode'))
                 ->collapsed()
                 ->schema(DebugForm::schema()),
         ])->disabled(user_cannot(SettingPermission::Edit));

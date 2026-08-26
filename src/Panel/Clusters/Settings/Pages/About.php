@@ -29,12 +29,12 @@ class About extends Page
 
     public function getTitle(): string|Htmlable
     {
-        return __('setting::setting.about.label');
+        return __('setting::about.label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('setting::setting.about.navigation');
+        return __('setting::about.navigation');
     }
 
     public function infolist(Schema $schema): Schema
@@ -43,25 +43,25 @@ class About extends Page
 
         return $schema
             ->schema([
-                Section::make(__('setting::setting.about.label'))
+                Section::make(__('setting::about.label'))
                     ->schema([
                         TextEntry::make('php_version')
-                            ->label(__('setting::setting.about.php_version'))
+                            ->label(__('setting::about.php_version'))
                             ->size(TextSize::Large)
                             ->state(phpversion()),
 
                         TextEntry::make('laravel_version')
-                            ->label(__('setting::setting.about.laravel_version'))
+                            ->label(__('setting::about.laravel_version'))
                             ->size(TextSize::Large)
                             ->state(ltrim(InstalledVersions::getPrettyVersion('laravel/framework'), 'v')),
 
                         TextEntry::make('filament_version')
-                            ->label(__('setting::setting.about.filament_version'))
+                            ->label(__('setting::about.filament_version'))
                             ->size(TextSize::Large)
                             ->state(ltrim(InstalledVersions::getPrettyVersion('filament/filament'), 'v')),
 
                         TextEntry::make('database_version')
-                            ->label(__('setting::setting.about.database_version'))
+                            ->label(__('setting::about.database_version'))
                             ->size(TextSize::Large)
                             ->state(vsprintf('%s - %s', [
                                 $database->getDriver()?->getLabel(),

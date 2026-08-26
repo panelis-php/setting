@@ -37,12 +37,12 @@ class Number extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
 
     public function getTitle(): string|Htmlable
     {
-        return __('setting::setting.number.label');
+        return __('setting::number.label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('setting::setting.number.navigation');
+        return __('setting::number.navigation');
     }
 
     public static function canAccess(): bool
@@ -71,31 +71,31 @@ class Number extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
     public function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make(__('setting::setting.number.label'))
+            Section::make(__('setting::number.label'))
                 ->disabled(! user_can(NumberPermission::Edit))
-                ->description(__('setting::setting.number.section_description'))
+                ->description(__('setting::number.section_description'))
                 ->schema([
                     TextInput::make('app.currency_symbol')
-                        ->label(__('setting::setting.number.currency_symbol'))
+                        ->label(__('setting::number.currency_symbol'))
                         ->live()
                         ->minValue(1)
                         ->maxValue(10),
 
                     Toggle::make('app.number_symbol_suffix')
-                        ->label(__('setting::setting.number.currency_symbol_as_suffix'))
-                        ->helperText(__('setting::setting.number.helper_currency_symbol_as_suffix'))
+                        ->label(__('setting::number.currency_symbol_as_suffix'))
+                        ->helperText(__('setting::number.helper_currency_symbol_as_suffix'))
                         ->live()
                         ->disabled(fn (Get $get): bool => empty($get('app.currency_symbol')))
                         ->nullable(),
 
                     Radio::make('app.number_format')
-                        ->label(__('setting::setting.number.format'))
+                        ->label(__('setting::number.format'))
                         ->required()
                         ->live()
                         ->options(NumberFormat::class),
 
                     TextEntry::make('sample_display')
-                        ->label(__('setting::setting.number.sample_display'))
+                        ->label(__('setting::number.sample_display'))
                         ->state(function (Get $get): ?string {
                             $format = $get('app.number_format') ?? NumberFormat::Plain;
 

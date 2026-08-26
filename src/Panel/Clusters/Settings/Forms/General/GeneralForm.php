@@ -17,26 +17,26 @@ class GeneralForm
     {
         return [
             TextInput::make('app.url')
-                ->label(__('setting::setting.general.url'))
+                ->label(__('setting::general.url'))
                 ->url()
                 ->required(),
 
             TextInput::make('app.name')
-                ->label(__('setting::setting.general.brand'))
+                ->label(__('setting::general.brand'))
                 ->required()
                 ->minValue(2)
                 ->maxValue(50),
 
             Textarea::make('app.description')
-                ->label(__('setting::setting.general.description'))
+                ->label(__('setting::general.description'))
                 ->rows(5)
                 ->nullable(),
 
             TagsInput::make('app.locales')
-                ->label(__('setting::setting.general.available_locales'))
+                ->label(__('setting::general.available_locales'))
                 ->hintColor('primary')
                 ->hint(
-                    str(__('setting::setting.general.locale_list_hint'))
+                    str(__('setting::general.locale_list_hint'))
                         ->inlineMarkdown()
                         ->toHtmlString()
                 )
@@ -44,7 +44,7 @@ class GeneralForm
                 ->required(),
 
             Radio::make('app.locale')
-                ->label(__('setting::setting.general.default_locale'))
+                ->label(__('setting::general.default_locale'))
                 ->default(Setting::get('app.locale'))
                 ->required()
                 ->options(function (Get $get): array {
@@ -59,14 +59,14 @@ class GeneralForm
                 }),
 
             TextInput::make('app.email')
-                ->label(__('setting::setting.general.email'))
+                ->label(__('setting::general.email'))
                 ->nullable()
                 ->email()
                 ->live(onBlur: true)
                 ->maxValue(100),
 
             Toggle::make('app.email_as_sender')
-                ->label(__('setting::setting.general.email_as_sender'))
+                ->label(__('setting::general.email_as_sender'))
                 ->default(0)
                 ->disabled(function (Get $get): bool {
                     $email = $get('app.email');
