@@ -16,6 +16,7 @@ use Panelis\Setting\Drivers\DriverManager;
 use Panelis\Setting\Drivers\Log\DailyDriver;
 use Panelis\Setting\Drivers\Log\ErrorlogDriver;
 use Panelis\Setting\Drivers\Log\MonologDriver;
+use Panelis\Setting\Drivers\Log\MonthlyDriver;
 use Panelis\Setting\Drivers\Log\PapertrailDriver;
 use Panelis\Setting\Drivers\Log\SingleDriver;
 use Panelis\Setting\Drivers\Log\SlackDriver;
@@ -54,6 +55,7 @@ class SettingServiceProvider extends ServiceProvider
             ->register(new DailyDriver)
             ->register(new ErrorlogDriver)
             ->register(new MonologDriver)
+            ->register(new MonthlyDriver)
             ->register(new PapertrailDriver)
             ->register(new SingleDriver)
             ->register(new SlackDriver)
