@@ -5,6 +5,7 @@ namespace Panelis\Setting\Panel\Clusters\Settings\Pages;
 use BackedEnum;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Schemas\Components\Image;
 use Filament\Schemas\Components\Section;
@@ -78,6 +79,22 @@ class User extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                             ->native(false)
                             ->searchable()
                             ->options(Role::options())
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->label(__('user::role.name'))
+                                    ->required()
+                                    ->unique(table: Role::class, column: 'name')
+                                    ->minLength(3)
+                                    ->maxLength(50),
+
+                                TextInput::make('guard_name')
+                                    ->label(__('user::role.guard_name'))
+                                    ->default('web')
+                                    ->datalist(['web', 'api'])
+                                    ->required()
+                                    ->alphaDash(),
+                            ])
+                            ->createOptionUsing(fn (array $data): int => Role::create($data)->getKey())
                             ->required(),
 
                         Radio::make('user.avatar_provider')
