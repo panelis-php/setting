@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'url' => 'URL',
+    'brand' => 'Brand',
+    'description' => 'Description',
+    'available_locales' => 'Available locales',
+    'locale_list_hint' => '[List of ISO-639 codes](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes)',
+    'default_locale' => 'Default locale',
+    'email' => 'E-mail',
+    'email_as_sender' => 'Use e-mail address as sender address in e-mail',
+    'app_debug_enabled' => 'App debug enabled',
+    'telescope_enabled' => 'Telescope enabled',
+    'exported_file' => 'Exported file',
+    'setting_imported' => 'Setting imported',
+    'setting_not_imported' => 'Setting not imported',
+    'label' => 'General',
+    'navigation' => 'General',
+    'section_description' => 'Manage basic application information such as the app name, description, logo, default language, and contact e-mail.',
+    'debug_mode' => 'Debug Mode',
+    'image' => 'Logo & Favicon',
+    'section_image' => 'Manage the application logo and favicon used for branding and browser display.',
+    'use_logo_in_panel' => 'Use logo in admin panel',
+    'logo' => 'Logo',
+    'favicon' => 'Favicon',
+];

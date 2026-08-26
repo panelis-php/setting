@@ -39,12 +39,12 @@ class User extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
 
     public function getTitle(): string|Htmlable
     {
-        return __('setting::setting.user.label');
+        return __('setting::user.label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('setting::setting.user.navigation');
+        return __('setting::user.navigation');
     }
 
     public function updatePermission(): BackedEnum
@@ -70,18 +70,18 @@ class User extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
         return $schema
             ->disabled(user_cannot(UserPermission::Edit))
             ->components([
-                Section::make(__('setting::setting.user.label'))
-                    ->description(__('setting::setting.user.section_description'))
+                Section::make(__('setting::user.label'))
+                    ->description(__('setting::user.section_description'))
                     ->schema([
                         Select::make('user.default_role')
-                            ->label(__('setting::setting.user.default_role'))
+                            ->label(__('setting::user.default_role'))
                             ->native(false)
                             ->searchable()
                             ->options(Role::options())
                             ->required(),
 
                         Radio::make('user.avatar_provider')
-                            ->label(__('setting::setting.user.avatar_provider'))
+                            ->label(__('setting::user.avatar_provider'))
                             ->options(AvatarProvider::class)
                             ->enum(AvatarProvider::class)
                             ->default(AvatarProvider::UIAvatars)
@@ -89,7 +89,7 @@ class User extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                             ->required(),
 
                         Radio::make('user.avatar_libravatar_style')
-                            ->label(__('setting::setting.user.avatar_libravatar_style'))
+                            ->label(__('setting::user.avatar_libravatar_style'))
                             ->visible(fn (Get $get): bool => $get('user.avatar_provider') === AvatarProvider::Libravatar)
                             ->live()
                             ->enum(LibravatarStyle::class)

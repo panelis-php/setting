@@ -35,12 +35,12 @@ class Panel extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
 
     public static function getNavigationLabel(): string
     {
-        return __('setting::setting.panel.navigation');
+        return __('setting::panel.navigation');
     }
 
     public function getTitle(): string|Htmlable
     {
-        return __('setting::setting.panel.label');
+        return __('setting::panel.label');
     }
 
     public static function canAccess(): bool
@@ -70,22 +70,22 @@ class Panel extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
     {
         return $form
             ->schema([
-                Section::make(__('setting::setting.panel.label'))
-                    ->description(__('setting::setting.panel.section_description'))
+                Section::make(__('setting::panel.label'))
+                    ->description(__('setting::panel.section_description'))
                     ->schema([
                         Toggle::make('panelis.multitenant')
-                            ->label(__('setting::setting.panel.enable_multitenant'))
-                            ->hint(str(__('setting::setting.panel.multitenant_hint'))->inlineMarkdown()->toHtmlString())
-                            ->helperText(__('setting::setting.panel.multitenant_helper')),
+                            ->label(__('setting::panel.enable_multitenant'))
+                            ->hint(str(__('setting::panel.multitenant_hint'))->inlineMarkdown()->toHtmlString())
+                            ->helperText(__('setting::panel.multitenant_helper')),
 
                         TextInput::make('panelis.url')
-                            ->label(__('setting::setting.panel.url'))
+                            ->label(__('setting::panel.url'))
                             ->nullable()
                             ->live(onBlur: true)
                             ->url(),
 
                         TextInput::make('panelis.path')
-                            ->label(__('setting::setting.panel.path'))
+                            ->label(__('setting::panel.path'))
                             ->prefix(function (Get $get): string {
                                 if (! empty($get('panelis.url'))) {
                                     return rtrim($get('panelis.url'), '/').'/';

@@ -30,12 +30,12 @@ class Theme extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
 
     public static function getNavigationLabel(): string
     {
-        return __('setting::setting.theme.navigation');
+        return __('setting::theme.navigation');
     }
 
     public function getTitle(): string|Htmlable
     {
-        return __('setting::setting.theme.label');
+        return __('setting::theme.label');
     }
 
     public static function canAccess(): bool
@@ -70,14 +70,14 @@ class Theme extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
         $colorsInput = [];
         foreach ($this->colors as $color) {
             $colorsInput[] = ColorPicker::make(sprintf('color.%s', $color))
-                ->label(__(sprintf('setting::setting.theme.color_%s', $color)))
+                ->label(__(sprintf('setting::theme.color_%s', $color)))
                 ->nullable()
                 ->hexColor();
         }
 
         return $schema->schema([
-            Section::make(__('setting::setting.theme.label'))
-                ->description(__('setting::setting.theme.section_description'))
+            Section::make(__('setting::theme.label'))
+                ->description(__('setting::theme.section_description'))
                 ->schema($colorsInput),
         ]);
     }

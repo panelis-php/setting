@@ -36,12 +36,12 @@ class Datetime extends UpdateSettingPage implements HasSchemas, HasUpdateableFor
 
     public function getTitle(): string|Htmlable
     {
-        return __('setting::setting.datetime.label');
+        return __('setting::datetime.label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('setting::setting.datetime.navigation');
+        return __('setting::datetime.navigation');
     }
 
     public static function canAccess(): bool
@@ -69,9 +69,9 @@ class Datetime extends UpdateSettingPage implements HasSchemas, HasUpdateableFor
         $timezones = collect(DateTimeZone::listIdentifiers());
 
         return $schema->components([
-            Section::make(__('setting::setting.datetime.label'))
+            Section::make(__('setting::datetime.label'))
                 ->disabled(user_cannot(DatetimePermission::Edit))
-                ->description(__('setting::setting.datetime.section_description'))
+                ->description(__('setting::datetime.section_description'))
                 ->schema([
                     // do not override existing config from Laravel: "app.timezone"
                     // default timezone should be in UTC, but display timezone is interchangeable
@@ -81,12 +81,12 @@ class Datetime extends UpdateSettingPage implements HasSchemas, HasUpdateableFor
                         ->searchable()
                         ->in($timezones->toArray())
                         ->live()
-                        ->label(__('setting::setting.datetime.timezone')),
+                        ->label(__('setting::datetime.timezone')),
 
                     TextInput::make('app.datetime_format')
-                        ->label(__('setting::setting.datetime.format'))
+                        ->label(__('setting::datetime.format'))
                         ->hint(function (): Htmlable {
-                            return str(__('setting::setting.datetime.format_sample'))
+                            return str(__('setting::datetime.format_sample'))
                                 ->inlineMarkdown()
                                 ->toHtmlString();
                         })
@@ -95,7 +95,7 @@ class Datetime extends UpdateSettingPage implements HasSchemas, HasUpdateableFor
                         ->required(),
 
                     TextEntry::make('datetime.sample')
-                        ->label(__('setting::setting.datetime.sample'))
+                        ->label(__('setting::datetime.sample'))
                         ->state(function (Get $get): string {
                             return now($get('app.datetime_timezone'))
                                 ->translatedFormat($get('app.datetime_format'));

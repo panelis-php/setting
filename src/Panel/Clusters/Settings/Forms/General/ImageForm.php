@@ -14,7 +14,7 @@ class ImageForm
     {
         return [
             FileUpload::make('app.logo')
-                ->label(__('setting::setting.general.logo'))
+                ->label(__('setting::general.logo'))
                 ->disk(Disk::Public->value)
                 ->visibility('public')
                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -24,7 +24,7 @@ class ImageForm
                 ->image(),
 
             FileUpload::make('app.favicon')
-                ->label(__('setting::setting.general.favicon'))
+                ->label(__('setting::general.favicon'))
                 ->disk(Disk::Public->value)
                 ->visibility('public')
                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -34,7 +34,7 @@ class ImageForm
                 ->image(),
 
             Toggle::make('app.use_logo_in_panel')
-                ->label(__('setting::setting.general.use_logo_in_panel'))
+                ->label(__('setting::general.use_logo_in_panel'))
                 ->required(),
         ];
     }

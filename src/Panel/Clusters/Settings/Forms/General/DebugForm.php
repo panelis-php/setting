@@ -10,11 +10,11 @@ class DebugForm
     {
         return [
             Toggle::make('app.debug')
-                ->label(__('setting::setting.general.app_debug_enabled'))
+                ->label(__('setting::general.app_debug_enabled'))
                 ->helperText(fn (): ?string => app()->isProduction() ? __('setting::setting.helper_app_debug') : null),
 
             Toggle::make('telescope.enabled')
-                ->label(__('setting::setting.general.telescope_enabled')),
+                ->label(__('setting::general.telescope_enabled')),
         ];
     }
 }

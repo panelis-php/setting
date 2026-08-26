@@ -42,12 +42,12 @@ class Custom extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
 
     public function getTitle(): string|Htmlable
     {
-        return __('setting::setting.custom.label');
+        return __('setting::custom.label');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('setting::setting.custom.navigation');
+        return __('setting::custom.navigation');
     }
 
     public static function canAccess(): bool
@@ -72,8 +72,8 @@ class Custom extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
         return $schema
             ->disabled(user_cannot(CustomSettingPermission::Browse))
             ->schema([
-                Section::make(__('setting::setting.custom.label'))
-                    ->description(__('setting::setting.custom.section_description'))
+                Section::make(__('setting::custom.label'))
+                    ->description(__('setting::custom.section_description'))
                     ->schema([
                         Repeater::make('custom')
                             ->hiddenLabel()
@@ -90,8 +90,8 @@ class Custom extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                                     ->label(__('setting::setting.value')),
 
                                 Textarea::make('comment')
-                                    ->label(__('setting::setting.custom.comment'))
-                                    ->placeholder(__('setting::setting.custom.placeholder_comment')),
+                                    ->label(__('setting::custom.comment'))
+                                    ->placeholder(__('setting::custom.placeholder_comment')),
                             ])
                             ->deleteAction(function (Action $action): void {
                                 $action->requiresConfirmation()
@@ -154,7 +154,7 @@ class Custom extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
 
             Notification::make()
                 ->danger()
-                ->title(__('setting::setting.custom.updated'))
+                ->title(__('setting::custom.updated'))
                 ->body($e->getMessage())
                 ->send();
         }
