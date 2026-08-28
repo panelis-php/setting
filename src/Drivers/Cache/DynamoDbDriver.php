@@ -5,7 +5,7 @@ namespace Panelis\Setting\Drivers\Cache;
 use Composer\InstalledVersions;
 use Filament\Schemas\Components\Section;
 use Panelis\Setting\Drivers\CacheDriver;
-use Panelis\Setting\Panel\Clusters\Settings\Forms\Cache\DynamoDBForm;
+use Panelis\Setting\Panel\Clusters\Settings\Forms\Cache\DynamoDbForm;
 
 class DynamoDbDriver extends CacheDriver
 {
@@ -33,6 +33,6 @@ class DynamoDbDriver extends CacheDriver
 
     public function schema(): ?Section
     {
-        return DynamoDBForm::schema();
+        return DynamoDbForm::schema();
     }
 }
