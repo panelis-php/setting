@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'name_browse_setting' => 'Lihat pengaturan',
+    'name_edit_setting' => 'Ubah pengaturan',
+    'name_export_setting' => 'Ekspor pengaturan',
+    'name_import_setting' => 'Impor pengaturan',
+    'name_browse_panel_setting' => 'Lihat pengaturan panel',
+    'name_edit_panel_setting' => 'Ubah pengaturan panel',
+    'name_browse_user_setting' => 'Lihat pengaturan pengguna',
+    'name_edit_user_setting' => 'Ubah pengaturan pengguna',
+    'name_browse_custom_setting' => 'Lihat pengaturan kustom',
+    'name_edit_custom_setting' => 'Ubah pengaturan kustom',
+    'name_browse_datetime_setting' => 'Lihat pengaturan tanggal dan waktu',
+    'name_edit_datetime_setting' => 'Ubah pengaturan tanggal dan waktu',
+    'name_browse_number_setting' => 'Lihat pengaturan angka',
+    'name_edit_number_setting' => 'Ubah pengaturan angka',
+    'name_browse_mail_setting' => 'Lihat pengaturan email',
+    'name_edit_mail_setting' => 'Ubah pengaturan email',
+    'name_send_test_mail_setting' => 'Kirim email percobaan',
+    'name_browse_cache_setting' => 'Lihat pengaturan cache',
+    'name_edit_cache_setting' => 'Ubah pengaturan cache',
+    'name_flush_cache_setting' => 'Bersihkan cache',
+    'name_browse_log_setting' => 'Lihat pengaturan log',
+    'name_edit_log_setting' => 'Ubah pengaturan log',
+    'name_browse_theme_setting' => 'Lihat pengaturan tema',
+    'name_edit_theme_setting' => 'Ubah pengaturan tema',
+];

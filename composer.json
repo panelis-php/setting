@@ -1,6 +1,12 @@
 {
   "name": "panelis-php/setting",
   "description": "Manage application settings including general configuration, logging, mail, formatting, and system options",
+  "authors": [
+    {
+      "name": "Yugo",
+      "email": "dedy.yugo.purwanto@gmail.com"
+    }
+  ],
   "keywords": [
     "panelis"
   ],
@@ -33,7 +39,19 @@
     "panelis": {
       "plugins": [
         "Panelis\\Setting\\Plugins\\SettingPlugin"
-      ]
+      ],
+      "permissions": {
+        "setting": "Panelis\\Setting\\Panel\\Clusters\\Settings\\Enums\\SettingPermission",
+        "panel": "Panelis\\Setting\\Panel\\Clusters\\Settings\\Enums\\PanelPermission",
+        "user": "Panelis\\Setting\\Panel\\Clusters\\Settings\\Enums\\UserPermission",
+        "custom": "Panelis\\Setting\\Panel\\Clusters\\Settings\\Enums\\CustomSettingPermission",
+        "datetime": "Panelis\\Setting\\Panel\\Clusters\\Settings\\Enums\\DatetimePermission",
+        "number": "Panelis\\Setting\\Panel\\Clusters\\Settings\\Enums\\NumberPermission",
+        "mail": "Panelis\\Setting\\Panel\\Clusters\\Settings\\Enums\\MailPermission",
+        "cache": "Panelis\\Setting\\Panel\\Clusters\\Settings\\Enums\\CachePermission",
+        "log": "Panelis\\Setting\\Panel\\Clusters\\Settings\\Enums\\LogPermission",
+        "theme": "Panelis\\Setting\\Panel\\Clusters\\Settings\\Enums\\ThemePermission"
+      }
     }
   },
   "require-dev": {

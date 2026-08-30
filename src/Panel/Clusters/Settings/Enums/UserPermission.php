@@ -2,8 +2,13 @@
 
 namespace Panelis\Setting\Panel\Clusters\Settings\Enums;
 
-enum UserPermission: string
+use Filament\Support\Contracts\HasLabel;
+use Panelis\Setting\Panel\Clusters\Settings\Enums\Concerns\HasPermissionLabel;
+
+enum UserPermission: string implements HasLabel
 {
+    use HasPermissionLabel;
+
     case Browse = 'BrowseUserSetting';
     case Edit = 'EditUserSetting';
 }
