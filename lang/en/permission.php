@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'name_browse_setting' => 'Browse settings',
+    'name_edit_setting' => 'Edit settings',
+    'name_export_setting' => 'Export settings',
+    'name_import_setting' => 'Import settings',
+    'name_browse_panel_setting' => 'Browse panel settings',
+    'name_edit_panel_setting' => 'Edit panel settings',
+    'name_browse_user_setting' => 'Browse user settings',
+    'name_edit_user_setting' => 'Edit user settings',
+    'name_browse_custom_setting' => 'Browse custom settings',
+    'name_edit_custom_setting' => 'Edit custom settings',
+    'name_browse_datetime_setting' => 'Browse date and time settings',
+    'name_edit_datetime_setting' => 'Edit date and time settings',
+    'name_browse_number_setting' => 'Browse number settings',
+    'name_edit_number_setting' => 'Edit number settings',
+    'name_browse_mail_setting' => 'Browse mail settings',
+    'name_edit_mail_setting' => 'Edit mail settings',
+    'name_send_test_mail_setting' => 'Send test mail',
+    'name_browse_cache_setting' => 'Browse cache settings',
+    'name_edit_cache_setting' => 'Edit cache settings',
+    'name_flush_cache_setting' => 'Flush cache',
+    'name_browse_log_setting' => 'Browse log settings',
+    'name_edit_log_setting' => 'Edit log settings',
+    'name_browse_theme_setting' => 'Browse theme settings',
+    'name_edit_theme_setting' => 'Edit theme settings',
+];

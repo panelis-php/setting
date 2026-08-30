@@ -2,8 +2,13 @@
 
 namespace Panelis\Setting\Panel\Clusters\Settings\Enums;
 
-enum DatetimePermission: string
+use Filament\Support\Contracts\HasLabel;
+use Panelis\Setting\Panel\Clusters\Settings\Enums\Concerns\HasPermissionLabel;
+
+enum DatetimePermission: string implements HasLabel
 {
+    use HasPermissionLabel;
+
     case Browse = 'BrowseDatetimeSetting';
 
     case Edit = 'EditDatetimeSetting';
