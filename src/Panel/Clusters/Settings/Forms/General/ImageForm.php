@@ -2,7 +2,6 @@
 
 namespace Panelis\Setting\Panel\Clusters\Settings\Forms\General;
 
-use App\Enums\Disk;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Toggle;
 use Illuminate\Support\Str;
@@ -15,7 +14,7 @@ class ImageForm
         return [
             FileUpload::make('app.logo')
                 ->label(__('setting::general.logo'))
-                ->disk(Disk::Public->value)
+                ->disk('public')
                 ->visibility('public')
                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                     return sprintf('logo-%s.%s', Str::slug(config('app.name')), $file->getClientOriginalExtension());
@@ -25,7 +24,7 @@ class ImageForm
 
             FileUpload::make('app.favicon')
                 ->label(__('setting::general.favicon'))
-                ->disk(Disk::Public->value)
+                ->disk('public')
                 ->visibility('public')
                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                     return 'favicon.'.$file->getClientOriginalExtension();
