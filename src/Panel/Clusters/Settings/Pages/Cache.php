@@ -46,6 +46,7 @@ class Cache extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                 ->action(function (): void {
                     try {
                         \Illuminate\Support\Facades\Cache::put('test', 'test', now()->addMinute(5));
+                        $this->auditSettingAction('test_cache');
 
                         Notification::make()
                             ->title(__('setting::cache.test_success'))
@@ -53,6 +54,7 @@ class Cache extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                             ->send();
                     } catch (Exception $e) {
                         Log::error($e);
+                        $this->auditSettingAction('test_cache', false, $e);
 
                         Notification::make()
                             ->title(__('setting::cache.test_failed'))
@@ -70,6 +72,7 @@ class Cache extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                 ->action(function (): void {
                     try {
                         \Illuminate\Support\Facades\Cache::flush();
+                        $this->auditSettingAction('flush_cache');
 
                         Notification::make()
                             ->title(__('setting::cache.flushed'))
@@ -77,6 +80,7 @@ class Cache extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                             ->send();
                     } catch (Exception $e) {
                         Log::error($e);
+                        $this->auditSettingAction('flush_cache', false, $e);
                     }
                 }),
         ];

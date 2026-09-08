@@ -8,6 +8,7 @@ use Filament\Pages\Page;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Panelis\Setting\Events\SettingUpdated;
 use Panelis\Setting\Models\Setting;
 use Throwable;
@@ -35,6 +36,8 @@ abstract class UpdateSettingPage extends Page
 
             event(new SettingUpdated);
 
+            $this->auditSettingUpdate();
+
             Notification::make()
                 ->title(__('setting::setting.notifications.updated.title'))
                 ->success()
@@ -43,6 +46,8 @@ abstract class UpdateSettingPage extends Page
             $this->afterUpdated($states);
         } catch (Throwable $e) {
             Log::error($e);
+
+            $this->auditSettingUpdate(false, $e);
 
             Notification::make()
                 ->title(__('setting::setting.notifications.update_failed.title'))
@@ -57,4 +62,47 @@ abstract class UpdateSettingPage extends Page
     protected function afterValidated(array $forms): void {}
 
     protected function afterUpdated(array $forms): void {}
+
+    protected function auditSettingUpdate(bool $successful = true, ?Throwable $exception = null): void
+    {
+        if (! function_exists('audit')) {
+            return;
+        }
+
+        $event = 'update_'.Str::snake(class_basename(static::class));
+        if (! $successful) {
+            $event .= '_failed';
+        }
+
+        $audit = audit('settings')
+            ->event($event)
+            ->withProperty('page', class_basename(static::class))
+            ->withProperty('settings', array_keys(Arr::dot($this->form->getState())));
+
+        if ($exception !== null) {
+            $audit->withProperty('exception', $exception::class);
+        }
+
+        $audit->log('setting::activity.'.$event);
+    }
+
+    protected function auditSettingAction(string $action, bool $successful = true, ?Throwable $exception = null): void
+    {
+        if (! function_exists('audit')) {
+            return;
+        }
+
+        $event = $successful ? $action : $action.'_failed';
+
+        $audit = audit('settings')
+            ->event($event)
+            ->withProperty('page', class_basename(static::class))
+            ->withProperty('action', $action);
+
+        if ($exception !== null) {
+            $audit->withProperty('exception', $exception::class);
+        }
+
+        $audit->log('setting::activity.'.$event);
+    }
 }

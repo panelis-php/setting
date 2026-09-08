@@ -6,6 +6,7 @@ use BackedEnum;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Schemas\Components\Image;
 use Filament\Schemas\Components\Section;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Panelis\Setting\Drivers\Avatar\UIAvatarsDriver;
 use Panelis\Setting\Drivers\AvatarDriver;
 use Panelis\Setting\Drivers\DriverManager;
+use Panelis\Setting\Models\Setting;
 use Panelis\Setting\Panel\Clusters\Settings;
 use Panelis\Setting\Panel\Clusters\Settings\Enums\LibravatarStyle;
 use Panelis\Setting\Panel\Clusters\Settings\Enums\UserPermission;
@@ -40,6 +42,8 @@ class User extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
 
     public ?array $user;
 
+    public array $activity = [];
+
     public function getTitle(): string|Htmlable
     {
         return __('setting::user.label');
@@ -59,6 +63,9 @@ class User extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
     {
         $this->form->fill([
             'user' => config('user'),
+            'activity' => [
+                'enabled' => Setting::get('activity.enabled', false),
+            ],
             'isButtonDisabled' => user_cannot(UserPermission::Edit),
         ]);
     }
@@ -98,6 +105,12 @@ class User extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                             ])
                             ->createOptionUsing(fn (array $data): int => Role::create($data)->getKey())
                             ->required(),
+
+                        Toggle::make('activity.enabled')
+                            ->label(__('setting::user.activity_log_enabled'))
+                            ->helperText(__('setting::user.activity_log_helper'))
+                            ->live()
+                            ->default(false),
 
                         Radio::make('user.avatar_provider')
                             ->label(__('setting::user.avatar_provider'))
