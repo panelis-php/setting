@@ -10,7 +10,6 @@ use Filament\Actions\ActionGroup;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Notifications\Notification;
-use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -26,10 +25,11 @@ use Panelis\Setting\Panel\Clusters\Settings\Enums\SettingPermission;
 use Panelis\Setting\Panel\Clusters\Settings\Forms\General\DebugForm;
 use Panelis\Setting\Panel\Clusters\Settings\Forms\General\GeneralForm;
 use Panelis\Setting\Panel\Clusters\Settings\Forms\General\ImageForm;
+use Panelis\Setting\Panel\Clusters\Settings\UpdateSettingPage;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class General extends Page
+class General extends UpdateSettingPage
 {
     use InteractsWithForms;
     use Settings\Traits\AddUpdateButton;
@@ -54,7 +54,16 @@ class General extends Page
                 ->visible(user_can(SettingPermission::Export))
                 ->requiresConfirmation()
                 ->action(function (): StreamedResponse {
-                    return ExportAll::run();
+                    try {
+                        $response = ExportAll::run();
+                        $this->auditSettingAction('export');
+
+                        return $response;
+                    } catch (Exception $e) {
+                        $this->auditSettingAction('export', false, $e);
+
+                        throw $e;
+                    }
                 }),
 
             ActionGroup::make([
@@ -78,6 +87,7 @@ class General extends Page
                     ->action(function (array $data): void {
                         try {
                             ImportAll::run($data['settings']);
+                            $this->auditSettingAction('import');
 
                             Notification::make()
                                 ->title(__('setting::general.setting_imported'))
@@ -85,6 +95,7 @@ class General extends Page
                                 ->send();
                         } catch (Exception $e) {
                             Logger::error($e);
+                            $this->auditSettingAction('import', false, $e);
 
                             Notification::make()
                                 ->title(__('setting::general.setting_not_imported'))
@@ -176,28 +187,39 @@ class General extends Page
 
         $this->validate();
 
-        $state = $this->form->getState();
-        foreach ($state['app'] as $key => $value) {
-            $key = sprintf('app.%s', $key);
-            if ($value === false) {
-                $value = '0';
+        try {
+            $state = $this->form->getState();
+            foreach ($state['app'] as $key => $value) {
+                $key = sprintf('app.%s', $key);
+                if ($value === false) {
+                    $value = '0';
+                }
+
+                if ($key === 'app.email_as_sender' && data_get($state, 'app.email_as_sender') === true) {
+                    Setting::set('mail.from.address', data_get($state, 'app.email'));
+                }
+
+                Setting::set($key, $value);
             }
 
-            if ($key === 'app.email_as_sender' && data_get($state, 'app.email_as_sender') === true) {
-                Setting::set('mail.from.address', data_get($state, 'app.email'));
-            }
+            Setting::set('telescope.enabled', data_get($state, 'telescope.enabled', false));
 
-            Setting::set($key, $value);
+            event(new SettingUpdated);
+            $this->auditSettingUpdate();
+
+            Notification::make()
+                ->title(__('filament-actions::edit.single.notifications.saved.title'))
+                ->success()
+                ->send();
+        } catch (Exception $e) {
+            Logger::error($e);
+            $this->auditSettingUpdate(false, $e);
+
+            Notification::make()
+                ->title(__('setting::setting.notifications.update_failed.title'))
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
         }
-
-        // specific setting for telescope
-        Setting::set('telescope.enabled', data_get($state, 'telescope.enabled', false));
-
-        event(new SettingUpdated);
-
-        Notification::make()
-            ->title(__('filament-actions::edit.single.notifications.saved.title'))
-            ->success()
-            ->send();
     }
 }

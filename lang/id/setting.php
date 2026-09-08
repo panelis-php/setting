@@ -19,4 +19,10 @@ return [
         'update_failed' => ['title' => 'Gagal menyimpan pengaturan'],
     ],
     'btn' => ['update' => 'Perbarui'],
+    'audit' => [
+        'updated' => 'Pengaturan diperbarui',
+        'failed' => 'Pembaruan pengaturan gagal',
+        'action_succeeded' => 'Aksi pengaturan berhasil: :action',
+        'action_failed' => 'Aksi pengaturan gagal: :action',
+    ],
 ];

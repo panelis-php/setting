@@ -69,6 +69,7 @@ class Log extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                 ->action(function (array $data): void {
                     try {
                         Logger::debug($data['message'] ?? 'Testing log');
+                        $this->auditSettingAction('send_log');
 
                         Notification::make()
                             ->title(__('setting::log.test_sent'))
@@ -82,7 +83,9 @@ class Log extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                                 ->danger()
                                 ->sendToDatabase(Auth::user());
                         }
-                    } catch (Exception) {
+                    } catch (Exception $e) {
+                        Logger::error($e);
+                        $this->auditSettingAction('send_log', false, $e);
                     }
                 }),
         ];
@@ -177,6 +180,7 @@ class Log extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
             }
 
             Event::dispatch(new SettingUpdated);
+            $this->auditSettingUpdate();
 
             Notification::make()
                 ->title(__('setting::setting.notifications.updated.title'))
@@ -184,6 +188,7 @@ class Log extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                 ->send();
         } catch (Exception $e) {
             Logger::error($e);
+            $this->auditSettingUpdate(false, $e);
 
             Notification::make()
                 ->title(__('setting::setting.notifications.update_failed.title'))

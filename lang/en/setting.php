@@ -19,4 +19,10 @@ return [
         'update_failed' => ['title' => 'Failed to save setting'],
     ],
     'btn' => ['update' => 'Update'],
+    'audit' => [
+        'updated' => 'Settings updated',
+        'failed' => 'Settings update failed',
+        'action_succeeded' => 'Settings action succeeded: :action',
+        'action_failed' => 'Settings action failed: :action',
+    ],
 ];

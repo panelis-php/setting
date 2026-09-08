@@ -144,6 +144,7 @@ class Custom extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
             }
 
             event(new SettingUpdated);
+            $this->auditSettingUpdate();
 
             Notification::make()
                 ->success()
@@ -151,6 +152,7 @@ class Custom extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                 ->send();
         } catch (Exception $e) {
             Log::error($e);
+            $this->auditSettingUpdate(false, $e);
 
             Notification::make()
                 ->danger()

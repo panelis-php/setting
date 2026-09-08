@@ -136,6 +136,7 @@ class Mail extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
 
                         Mailer::to($data['to'])
                             ->send(new TestMail(...$from));
+                        $this->auditSettingAction('test_mail');
 
                         Notification::make()
                             ->success()
@@ -144,6 +145,7 @@ class Mail extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                             ->send();
                     } catch (Exception $e) {
                         Log::error($e);
+                        $this->auditSettingAction('test_mail', false, $e);
 
                         Notification::make()
                             ->danger()
@@ -199,6 +201,7 @@ class Mail extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
             }
 
             event(new SettingUpdated);
+            $this->auditSettingUpdate();
 
             Notification::make()
                 ->success()
@@ -206,6 +209,7 @@ class Mail extends UpdateSettingPage implements HasSchemas, HasUpdateableForm
                 ->send();
         } catch (Throwable $e) {
             Log::error($e);
+            $this->auditSettingUpdate(false, $e);
 
             Notification::make()
                 ->title(__('setting::setting.notifications.update_failed.title'))
